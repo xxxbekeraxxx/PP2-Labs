@@ -1,0 +1,19 @@
+import json
+
+with open('sample-data.json', 'r') as file:
+    data = json.load(file)
+
+imdata = data["imdata"]
+headers = ["DN", "Description", "Speed", "MTU"]
+print("=" * 80)
+print(f"{headers[0]:<50} {headers[1]:<20} {headers[2]:<10} {headers[3]:<6}")
+print("-" * 80)
+
+for item in imdata:
+    attributes = item['l1PhysIf']['attributes']
+    dn = attributes.get("dn", "N/A")
+    descr = attributes.get("descr", "N/A")
+    speed = attributes.get("speed", "N/A")
+    mtu = attributes.get("mtu", "N/A")
+    
+    print(f"{dn:<50} {descr:<20} {speed:<10} {mtu:<6}")
