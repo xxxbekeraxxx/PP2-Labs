@@ -30,7 +30,7 @@ print(f"Square root of {x} after {ms} milliseconds is {math.sqrt(x)}")
 
 
 print(" ")
-#Problem 4
+#Problem 5
 t = (1, 2, 3)
 result = all(t)
 print(result)
