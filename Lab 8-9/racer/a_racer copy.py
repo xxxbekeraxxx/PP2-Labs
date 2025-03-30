@@ -21,9 +21,9 @@ image_coin = pygame.transform.scale(image_coin, (40, 40)) # scale coin to need s
 
 
 # loading sounds
-sound_bg = pygame.mixer.music.load("resources/background.wav")
-sound_crash = pygame.mixer.Sound("resources/crash.wav")
-pygame.mixer.music.play(-1) # loop for background sound
+# sound_bg = pygame.mixer.music.load("resources/background.wav")
+# sound_crash = pygame.mixer.Sound("resources/crash.wav")
+# pygame.mixer.music.play(-1) # loop for background sound
 
 
 # class for player
@@ -52,18 +52,18 @@ class Enemy(pygame.sprite.Sprite):
         super().__init__()
         self.image = image_enemy
         self.rect = self.image.get_rect()
-        self.rect.center = (random.randint(40, WIDTH - 40), 0)
-        self.speed = 8
+        self.rect.center = (random.randint(60, WIDTH - 60), 0)
+        self.speed = 7
 
     # method to moving enemy car
     def move(self):
         self.rect.move_ip(0, self.speed)
         if self.rect.top > HEIGTH:
-            self.rand_rect()
+            self.random_position()
 
     # random position for enemy car
-    def rand_rect(self):
-        self.rect.x = random.randint(40, WIDTH - 40)
+    def random_position(self):
+        self.rect.x = random.randint(60, WIDTH - 60)
         self.rect.y = 0
 
 
@@ -74,18 +74,23 @@ class Coin(pygame.sprite.Sprite):
         self.image = image_coin
         self.rect = self.image.get_rect()
         self.rect.center = (random.randint(60, WIDTH - 60), 0)
-        self.speed = 3
+        self.speed = 4
+        self.weight = random.randint(1, 5)
     
     # method to moving for coin
     def move(self):
         self.rect.move_ip(0, self.speed)
         if self.rect.top > HEIGTH:
-            self.rand_rect()
+            self.random_position()
 
     # random position for coin
-    def rand_rect(self):
+    def random_position(self):
         self.rect.x = random.randint(60, WIDTH - 60)
         self.rect.y = 0
+    
+    # random weight for coin
+    def random_weight(self):
+        self.weight = random.randint(1, 5)
 
 
 # creating objects
@@ -110,6 +115,7 @@ score = 0 # variable to store sum of collected coins
 font_game_over = pygame.font.SysFont("comicsansms", 72)
 text_game_over = font_game_over.render("Game Over", True, "black")
 font_score = pygame.font.SysFont("san serif", 28)
+font_coin_weight = pygame.font.SysFont("arial", 24)
 
 
 # frames per sec
@@ -146,7 +152,7 @@ while running:
 
     # enemy and player collide
     if pygame.sprite.spritecollideany(player, sprites_enemy):
-        sound_crash.play() # play crash sound
+        # sound_crash.play() # play crash sound
         time.sleep(1) # screen stops for a second
 
         screen.fill("red") # screen  fills to red
@@ -157,14 +163,21 @@ while running:
         
         pygame.display.flip() # update screen
         
-        time.sleep(5) # screen stops for a 5 seconds
+        time.sleep(3) # screen stops for a 3 seconds
         running = False # game loop ends and window closes
 
     # player face coin
     if pygame.sprite.spritecollideany(player, sprites_coin):
-        coin.rand_rect() # coin occurs at another position
-        score += 1 # score increases
+        coin.random_position() # coin occurs at another position
+        coin.random_weight() # coin will have another weight
+        score += coin.weight # score increases
 
+    # increasing speed of enemy
+    enemy.speed = 7 + (score // 10)
+        
+    # showing weight of coin 
+    text_coin_weight = font_coin_weight.render(f"{coin.weight}", True, "sienna") 
+    screen.blit(text_coin_weight, (coin.rect.centerx - 5, coin.rect.centery - 14))
 
     pygame.display.flip() # update screen
     clock.tick(FPS) # 60 frames per sec
